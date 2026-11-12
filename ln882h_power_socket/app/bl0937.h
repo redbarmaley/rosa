@@ -4,13 +4,14 @@
 #include <stdint.h>
 
 #include "hal/hal_gpio.h"
+#include "board_pins.h"
 
-#define BL0937_SEL_PORT         GPIOB_BASE
-#define BL0937_SEL_PIN          GPIO_PIN_8
-#define BL0937_CF_PORT          GPIOA_BASE
-#define BL0937_CF_PIN           GPIO_PIN_7
-#define BL0937_CF1_PORT         GPIOA_BASE
-#define BL0937_CF1_PIN          GPIO_PIN_8
+#define BL0937_SEL_PORT         BOARD_BL0937_SEL_PORT
+#define BL0937_SEL_PIN          BOARD_BL0937_SEL_PIN
+#define BL0937_CF_PORT          BOARD_BL0937_CF_PORT
+#define BL0937_CF_PIN           BOARD_BL0937_CF_PIN
+#define BL0937_CF1_PORT         BOARD_BL0937_CF1_PORT
+#define BL0937_CF1_PIN          BOARD_BL0937_CF1_PIN
 
 typedef struct
 {

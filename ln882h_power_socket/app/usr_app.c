@@ -20,6 +20,7 @@
 #include "usr_app.h"
 #include "config.h"
 #include "bl0937.h"
+#include "control.h"
 #include "https_client.h"
 
 #include <stdbool.h>
@@ -33,6 +34,7 @@
 #define WIFI_USER_USE_WPA3                (1) /* 0: Not use; 1: Use */
 
 #define POWER_TASK_STACK_SIZE             (2048)
+#define CONTROL_TASK_STACK_SIZE           (2048)
 #define NET_TASK_STACK_SIZE               (16384)
 
 #define NET_RECONNECT_INTERVAL_MS         (30000u)
@@ -51,11 +53,13 @@ static OS_Thread_t g_temp_cal_thread;
 #endif
 
 static OS_Thread_t g_power_thread;
+static OS_Thread_t g_control_thread;
 static OS_Thread_t g_net_thread;
 
 /* declaration */
 static void wifi_init_sta(void);
 static void power_task_entry(void *params);
+static void control_task_entry(void *params);
 static void net_task_entry(void *params);
 static void temp_cal_app_task_entry(void *params);
 
@@ -227,7 +231,6 @@ static void power_task_entry(void *params)
 {
     LN_UNUSED(params);
 
-    bl0937_init();
     uint32_t last_ms = OS_TicksToMSecs(OS_GetTicks());
 
     while (1) {
@@ -238,6 +241,17 @@ static void power_task_entry(void *params)
         last_ms = now_ms;
 
         bl0937_tick((float)dt_ms);
+    }
+}
+
+static void control_task_entry(void *params)
+{
+    LN_UNUSED(params);
+
+    while (1) {
+        uint32_t now_ms = OS_TicksToMSecs(OS_GetTicks());
+        control_tick(now_ms, netdev_got_ip() != 0);
+        OS_MsDelay(POWER_SOCKET_CONTROL_PERIOD_MS);
     }
 }
 
@@ -350,7 +364,14 @@ void creat_usr_app_task(void)
                                             CLK_G_UART1 | CLK_G_UART2 | CLK_G_WDT | CLK_G_TIM1 | CLK_G_TIM2 | CLK_G_MAC | CLK_G_DMA | CLK_G_RF | CLK_G_ADV_TIMER| CLK_G_TRNG);
     }
 
+    bl0937_init();
+    control_init();
+
     if(OS_OK != OS_ThreadCreate(&g_power_thread, "PowerAPP", power_task_entry, NULL, OS_PRIORITY_BELOW_NORMAL, POWER_TASK_STACK_SIZE)) {
+        LN_ASSERT(1);
+    }
+
+    if(OS_OK != OS_ThreadCreate(&g_control_thread, "CtrlAPP", control_task_entry, NULL, OS_PRIORITY_BELOW_NORMAL, CONTROL_TASK_STACK_SIZE)) {
         LN_ASSERT(1);
     }
 

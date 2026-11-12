@@ -20,7 +20,7 @@ static uint32_t s_uptime_rem_ms;
 
 static bl0937_reading_t s_reading;
 
-void GPIOA_IRQHandler(void);
+void GPIOB_IRQHandler(void);
 
 static void bl0937_set_sel(bool high)
 {
@@ -46,7 +46,9 @@ void bl0937_init(void)
     s_sel_high = true;
     s_uptime_rem_ms = 0;
 
-    hal_gpio_pin_afio_en(GPIOB_BASE, GPIO_PIN_8, HAL_DISABLE);
+    hal_gpio_pin_afio_en(BL0937_CF_PORT, BL0937_CF_PIN, HAL_DISABLE);
+    hal_gpio_pin_afio_en(BL0937_CF1_PORT, BL0937_CF1_PIN, HAL_DISABLE);
+    hal_gpio_pin_afio_en(BL0937_SEL_PORT, BL0937_SEL_PIN, HAL_DISABLE);
 
     gpio_cfg.pin = BL0937_SEL_PIN;
     gpio_cfg.dir = GPIO_OUTPUT;
@@ -70,8 +72,8 @@ void bl0937_init(void)
     hal_gpio_pin_it_en(BL0937_CF_PORT, BL0937_CF_PIN, HAL_ENABLE);
     hal_gpio_pin_it_en(BL0937_CF1_PORT, BL0937_CF1_PIN, HAL_ENABLE);
 
-    NVIC_ClearPendingIRQ(GPIOA_IRQn);
-    NVIC_EnableIRQ(GPIOA_IRQn);
+    NVIC_ClearPendingIRQ(GPIOB_IRQn);
+    NVIC_EnableIRQ(GPIOB_IRQn);
 
     if ((ln_kv_get("pwr_wh", &saved_energy, sizeof(saved_energy), &value_len) == KV_ERR_NONE) &&
         (value_len == sizeof(saved_energy)) && (saved_energy >= 0.0f)) {
@@ -87,7 +89,7 @@ void bl0937_init(void)
     LOG(LOG_LVL_INFO, "BL0937 init: energy=%.3f Wh\r\n", (double)s_reading.energy_wh);
 }
 
-void GPIOA_IRQHandler(void)
+void GPIOB_IRQHandler(void)
 {
     if (hal_gpio_pin_get_it_flag(BL0937_CF_PORT, BL0937_CF_PIN)) {
         hal_gpio_pin_clr_it_flag(BL0937_CF_PORT, BL0937_CF_PIN);

@@ -50,7 +50,7 @@ static void uart_io_pin_request(struct Serial *serial)
 {
     if (serial->port_id == SER_PORT_UART0)
     {
-        /* GPIOB8 is used by BL0937 SEL. Keep UART0 TX-only on GPIOB9. */
+        /* Keep UART0 TX-only on GPIOB9. */
         hal_gpio_pin_afio_select(GPIOB_BASE,GPIO_PIN_9,UART0_TX);
         hal_gpio_pin_afio_en(GPIOB_BASE,GPIO_PIN_9,HAL_ENABLE);
     } 
@@ -104,7 +104,7 @@ static void hw_uart0_init(struct SerialHardware *_hw, struct Serial *serial, uin
 
     hal_uart_init(g_uart0.uart_base, &g_uart0.init_cfg);
 
-    /* Log-only UART0: TX on GPIOB9, no RX (GPIOB8 belongs to BL0937 SEL). */
+    /* Log-only UART0: TX on GPIOB9, no RX. */
     hal_uart_rx_mode_en(g_uart0.uart_base, HAL_DISABLE);
     hal_uart_tx_mode_en(g_uart0.uart_base, HAL_ENABLE);
     hal_uart_en(g_uart0.uart_base, HAL_ENABLE);

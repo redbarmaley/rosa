@@ -4,6 +4,7 @@ set(PROJ_ALL_SRC
     app/main.c
     app/usr_app.c
     app/bl0937.c
+    app/control.c
     app/https_client.c
     app/entropy_ln.c
     bsp/serial_hw.c
