@@ -1,0 +1,19 @@
+#ifndef POWER_SOCKET_CONFIG_H
+#define POWER_SOCKET_CONFIG_H
+
+#define POWER_SOCKET_WIFI_SSID              "YOUR_WIFI_SSID"
+#define POWER_SOCKET_WIFI_PASSWORD          "YOUR_WIFI_PASSWORD"
+
+#define POWER_SOCKET_POST_URL               "https://example.com/api/power"
+#define POWER_SOCKET_POST_INTERVAL_SEC      600
+
+#define POWER_SOCKET_HTTP_TIMEOUT_MS        5000
+
+#define POWER_SOCKET_VOLTAGE_CAL            0.13253012048f
+#define POWER_SOCKET_CURRENT_CAL            0.0118577075f
+#define POWER_SOCKET_POWER_CAL              1.5f
+#define POWER_SOCKET_POWER_MAX              3680.0f
+
+#define BL0937_INVERT_SEL                   0
+
+#endif
